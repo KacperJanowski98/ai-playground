@@ -1,0 +1,7 @@
+# LangGraph agent with persistent memory using PostgreSQL
+
+## Learning goals
+
+PostgreSQL checkpointers in LangGraph serve as a way to store and maintain graph states using PostgreSQL databases. By integrating a PostgreSQL checkpointer into your graph, you can automatically save snapshots of the graph's condition after each major processing step (superstep). This functionality opens up new possibilities - you can pause for human input during processing, maintain persistent memory across different interactions, and implement various other advanced features. Think of it as creating save points that let you track, manage, and restore different states of your graph operations through PostgreSQL.
+
+The AsyncPostgresSaver class is a tool that adds permanent storage capabilities to LangGraph ReAct agents. When integrated, it allows your agent to save conversations and states in a PostgreSQL database, ensuring that information persists even if the program stops running or crashes. This class works by implementing a PostgreSQL checkpointer system specifically designed for LangGraph agents. A key feature is its use of asynchronous connection pools to handle database interactions - this means your application can continue working on other tasks while database operations are being processed in the background, rather than having to wait for them to complete. This makes the system more efficient and responsive.
