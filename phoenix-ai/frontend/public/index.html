@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix AI Observability Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .info-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #4f46e5;
+        }
+        
+        .info-section h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .link-card {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .link-card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.1);
+        }
+        
+        .link-card h4 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .link-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .demo-section {
+            margin-top: 30px;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .demo-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+        }
+        
+        .demo-card h4 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border-left: 4px solid #10b981;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #10b981;
+        }
+        
+        .status-offline {
+            background: #ef4444;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Phoenix AI Observability Demo</h1>
+            <p>Test Phoenix AI tracing and monitoring capabilities</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-section">
+                <h3>📊 Quick Access</h3>
+                <div class="links">
+                    <a href="http://localhost:6006" target="_blank" class="link-card">
+                        <h4>🔥 Phoenix Dashboard</h4>
+                        <p>View traces and observability data</p>
+                    </a>
+                    <a href="http://localhost:8000/docs" target="_blank" class="link-card">
+                        <h4>📖 API Documentation</h4>
+                        <p>Interactive FastAPI documentation</p>
+                    </a>
+                    <a href="http://localhost:8000/api/status" target="_blank" class="link-card">
+                        <h4>📈 Backend Status</h4>
+                        <p>Check backend configuration</p>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3>ℹ️ About This Demo</h3>
+                <p>This application demonstrates Phoenix AI observability features by:</p>
+                <ul style="margin: 15px 0 0 20px; color: #64748b;">
+                    <li>Automatically tracing OpenAI API calls using OpenInference instrumentation</li>
+                    <li>Sending telemetry data to Phoenix via OpenTelemetry</li>
+                    <li>Providing multiple test endpoints to generate different types of traces</li>
+                    <li>Allowing you to observe LLM interactions, performance metrics, and debugging information</li>
+                </ul>
+            </div>
+            
+            <div class="demo-section">
+                <div class="demo-grid">
+                    <div class="demo-card">
+                        <h4>💬 Simple Chat Test</h4>
+                        <div class="form-group">
+                            <label for="simpleMessage">Message:</label>
+                            <textarea 
+                                id="simpleMessage" 
+                                placeholder="Ask me anything..."
+                            >What are the benefits of using observability tools for AI applications?</textarea>
+                        </div>
+                        <button onclick="testSimpleChat()" id="simpleChatBtn">
+                            Send Message
+                        </button>
+                        <div id="simpleChatResponse" class="response" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="demo-card">
+                        <h4>🤖 Advanced Chat Completion</h4>
+                        <div class="form-group">
+                            <label for="chatModel">Model:</label>
+                            <select id="chatModel">
+                                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                <option value="gpt-4">GPT-4</option>
+                                <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="chatMessage">User Message:</label>
+                            <textarea 
+                                id="chatMessage" 
+                                placeholder="Enter your message..."
+                            >Explain machine learning observability in simple terms.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="temperature">Temperature: <span id="tempValue">0.7</span></label>
+                            <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7" 
+                                   onchange="document.getElementById('tempValue').textContent = this.value"
+                                   style="width: 100%;">
+                        </div>
+                        <button onclick="testChatCompletion()" id="chatCompletionBtn">
+                            Generate Response
+                        </button>
+                        <div id="chatCompletionResponse" class="response" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="demo-card">
+                        <h4>🧪 Test Trace (No API Cost)</h4>
+                        <p style="color: #64748b; margin-bottom: 15px;">
+                            Generate a test trace without using OpenAI API to verify Phoenix observability is working.
+                        </p>
+                        <button onclick="testTrace()" id="testTraceBtn">
+                            Generate Test Trace
+                        </button>
+                        <div id="testTraceResponse" class="response" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="demo-card">
+                        <h4>📊 Backend Status</h4>
+                        <p style="color: #64748b; margin-bottom: 15px;">
+                            Check backend configuration and connection status.
+                        </p>
+                        <div id="statusInfo" style="margin-bottom: 15px;">
+                            <span class="status-indicator status-offline"></span>
+                            <span>Checking status...</span>
+                        </div>
+                        <button onclick="checkStatus()" id="statusBtn">
+                            Refresh Status
+                        </button>
+                        <div id="statusResponse" class="response" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        // Check status on page load
+        window.addEventListener('load', checkStatus);
+        
+        async function makeRequest(url, options = {}) {
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return response.json();
+        }
+        
+        function showResponse(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `response ${isError ? 'error' : ''}`;
+            element.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+        
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.innerHTML = '<span class="loading"></span>Processing...';
+                button.disabled = true;
+            } else {
+                button.disabled = false;
+            }
+        }
+        
+        async function testSimpleChat() {
+            const message = document.getElementById('simpleMessage').value;
+            const buttonId = 'simpleChatBtn';
+            
+            if (!message.trim()) {
+                showResponse('simpleChatResponse', 'Please enter a message', true);
+                return;
+            }
+            
+            setButtonLoading(buttonId, true);
+            
+            try {
+                const response = await makeRequest(`${API_BASE}/api/chat/simple?message=${encodeURIComponent(message)}`, {
+                    method: 'POST'
+                });
+                
+                showResponse('simpleChatResponse', response);
+                document.getElementById(buttonId).innerHTML = 'Send Message';
+            } catch (error) {
+                showResponse('simpleChatResponse', `Error: ${error.message}`, true);
+                document.getElementById(buttonId).innerHTML = 'Send Message';
+            }
+        }
+        
+        async function testChatCompletion() {
+            const model = document.getElementById('chatModel').value;
+            const message = document.getElementById('chatMessage').value;
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const buttonId = 'chatCompletionBtn';
+            
+            if (!message.trim()) {
+                showResponse('chatCompletionResponse', 'Please enter a message', true);
+                return;
+            }
+            
+            setButtonLoading(buttonId, true);
+            
+            try {
+                const response = await makeRequest(`${API_BASE}/api/chat/completion`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'user', content: message }
+                        ],
+                        model: model,
+                        temperature: temperature,
+                        max_tokens: 500
+                    })
+                });
+                
+                showResponse('chatCompletionResponse', response);
+                document.getElementById(buttonId).innerHTML = 'Generate Response';
+            } catch (error) {
+                showResponse('chatCompletionResponse', `Error: ${error.message}`, true);
+                document.getElementById(buttonId).innerHTML = 'Generate Response';
+            }
+        }
+        
+        async function testTrace() {
+            const buttonId = 'testTraceBtn';
+            setButtonLoading(buttonId, true);
+            
+            try {
+                const response = await makeRequest(`${API_BASE}/api/test/trace`);
+                showResponse('testTraceResponse', response);
+                document.getElementById(buttonId).innerHTML = 'Generate Test Trace';
+            } catch (error) {
+                showResponse('testTraceResponse', `Error: ${error.message}`, true);
+                document.getElementById(buttonId).innerHTML = 'Generate Test Trace';
+            }
+        }
+        
+        async function checkStatus() {
+            const buttonId = 'statusBtn';
+            setButtonLoading(buttonId, true);
+            
+            try {
+                const response = await makeRequest(`${API_BASE}/api/status`);
+                
+                // Update status indicator
+                const statusInfo = document.getElementById('statusInfo');
+                const indicator = statusInfo.querySelector('.status-indicator');
+                const text = statusInfo.querySelector('span:last-child');
+                
+                indicator.className = 'status-indicator status-online';
+                text.textContent = `Backend Online - OpenAI: ${response.openai_configured ? 'Configured' : 'Not Configured'}`;
+                
+                showResponse('statusResponse', response);
+                document.getElementById(buttonId).innerHTML = 'Refresh Status';
+            } catch (error) {
+                // Update status indicator
+                const statusInfo = document.getElementById('statusInfo');
+                const indicator = statusInfo.querySelector('.status-indicator');
+                const text = statusInfo.querySelector('span:last-child');
+                
+                indicator.className = 'status-indicator status-offline';
+                text.textContent = 'Backend Offline';
+                
+                showResponse('statusResponse', `Error: ${error.message}`, true);
+                document.getElementById(buttonId).innerHTML = 'Refresh Status';
+            }
+        }
+    </script>
+</body>
+</html>
